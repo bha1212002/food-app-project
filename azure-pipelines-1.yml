@@ -37,9 +37,9 @@ stages:
           az webapp deployment source sync --ids $ids
       displayName: 'Push to Azure'
 
-    - task: PowerShell@2
+    - task: Bash@3
       inputs:
         targetType: 'inline'
         script: |
-          Invoke-WebRequest -Uri 'http://food-application.azurewebsites.net' -UseBasicParsing
+          curl -IsS http://food-application.azurewebsites.net | head -n 1
       displayName: 'Ping Website'
