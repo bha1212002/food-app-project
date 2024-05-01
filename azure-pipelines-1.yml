@@ -42,4 +42,5 @@ stages:
         targetType: 'inline'
         script: |
           curl -IsS http://food-application.azurewebsites.net | head -n 1
-      displayName: 'Ping Website'
+          npm start
+      displayName: 'Ping Website and Start'
