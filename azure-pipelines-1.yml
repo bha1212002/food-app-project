@@ -37,6 +37,10 @@ stages:
           az webapp deployment source sync --ids $ids
       displayName: 'Push to Azure'
 
+    - script: |
+        npm install
+      displayName: 'Install Dependencies'
+
     - task: Bash@3
       inputs:
         targetType: 'inline'
