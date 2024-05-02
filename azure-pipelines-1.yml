@@ -36,15 +36,3 @@ stages:
           az webapp deployment source config --branch master --manual-integration --repo-url $repo_url --ids $ids
           az webapp deployment source sync --ids $ids
       displayName: 'Push to Azure'
-
-    - script: |
-        npm install
-      displayName: 'Install Dependencies'
-
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: |
-          curl -IsS http://food-application.azurewebsites.net | head -n 1
-          npm start
-      displayName: 'Ping Website and Start'
