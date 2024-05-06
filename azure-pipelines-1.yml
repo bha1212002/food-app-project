@@ -11,19 +11,41 @@ stages:
   - job: DeployJob
     displayName: 'Deploy Job'
     steps:
-    - task: Bash@3
+    - task: AzureCLI@2
+      displayName: 'Azure Login'
       inputs:
-        targetType: 'inline'
-        script: |
-          az login
-      displayName: 'Login Azure'
+        azureSubscription: 'eInfoChips Legacy Subscription - einfochipsIndia.onmicrosoft.com' # Use the name of your Azure subscription
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az account show' # This command checks if you're logged in
 
-    - task: Bash@3
+    - task: AzureCLI@2
+      displayName: 'Configure Web App Deployment Source'
       inputs:
-        targetType: 'inline'
-        script: |
-          ids=$(az webapp list --query '[0].id' -o tsv)
-          repo_url=https://github.com/bha1212002/food-app-project.git
-          az webapp deployment source config --branch main --manual-integration --repo-url $repo_url --ids $ids
-          az webapp deployment source sync --ids $ids
-      displayName: 'Push Azure'
+        azureSubscription: 'eInfoChips Legacy Subscription - einfochipsIndia.onmicrosoft.com' # Use the name of your Azure subscription
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          repo_url='https://github.com/bha1212002/food-app-project.git'
+          az webapp deployment source config --branch main --manual-integration --repo-url $repo_url --ids "/subscriptions/664b6097-19f2-42a3-be95-a4a6b4069f6b/resourceGroups/sa1_test_eic_BhavikChhabria/providers/Microsoft.Web/sites/webappazserv/sourcecontrols/web"
+          if [ $? -eq 0 ]; then
+            echo "Deployment source configured successfully."
+          else
+            echo "Failed to configure deployment source."
+            exit 1
+          fi
+
+    - task: AzureCLI@2
+      displayName: 'Sync Web App Deployment Source'
+      inputs:
+        azureSubscription: 'eInfoChips Legacy Subscription - einfochipsIndia.onmicrosoft.com' # Use the name of your Azure subscription
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az webapp deployment source sync --ids "/subscriptions/664b6097-19f2-42a3-be95-a4a6b4069f6b/resourceGroups/sa1_test_eic_BhavikChhabria/providers/Microsoft.Web/sites/webappazserv/sourcecontrols/web"
+          if [ $? -eq 0 ]; then
+            echo "Deployment source synced successfully."
+          else
+            echo "Failed to sync deployment source."
+            exit 1
+          fi
